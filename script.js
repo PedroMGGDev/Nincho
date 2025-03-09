@@ -1,47 +1,43 @@
-document.getElementById('generate').addEventListener('click', generateScript);
+document.addEventListener("DOMContentLoaded", function () {
+  const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
 
-async function generateScript() {
-  const niche = document.getElementById('niche').value;
-  const platform = document.getElementById('platform').value;
-  const scriptResult = document.getElementById('scriptResult');
-  const errorLogs = document.getElementById('errorLogs');
-  
-  // Limpar resultado e logs de erro
-  scriptResult.innerHTML = '';
-  errorLogs.textContent = '';
-
-  if (!niche) {
-    logError("Por favor, insira o nicho.");
+  if (!apiKey) {
+    alert("Erro: Chave da API não encontrada. Verifique as variáveis de ambiente na Vercel.");
     return;
   }
 
-  try {
-    const response = await fetch('https://api.openai.com/v1/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer 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`  // Substitua YOUR_API_KEY pela sua chave de API da OpenAI
-      },
-      body: JSON.stringify({
-        model: 'text-davinci-003',
-        prompt: `Crie um roteiro para um vídeo sobre ${niche} para a plataforma ${platform}.`,
-        max_tokens: 150
-      })
-    });
+  document.getElementById("gerar").addEventListener("click", async function () {
+    const niche = document.getElementById("niche").value;
+    const platform = document.getElementById("platform").value;
+    const output = document.getElementById("output");
+    const errorLog = document.getElementById("errorLog");
 
-    if (!response.ok) {
-      throw new Error('Erro ao gerar o roteiro');
+    output.innerHTML = "Gerando roteiro...";
+    errorLog.innerHTML = "";
+
+    try {
+      const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: "text-davinci-003",
+          prompt: `Crie um roteiro para um vídeo sobre ${niche} para a plataforma ${platform}.`,
+          max_tokens: 150
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error.message);
+      }
+
+      output.innerHTML = `<strong>Roteiro Gerado:</strong> <br> ${data.choices[0].text}`;
+    } catch (error) {
+      errorLog.innerHTML = `<strong>Erro:</strong> ${error.message}`;
     }
-
-    const data = await response.json();
-    scriptResult.innerHTML = `<p><strong>Roteiro:</strong> ${data.choices[0].text}</p>`;
-  } catch (error) {
-    logError(error.message);
-  }
-}
-
-function logError(message) {
-  const errorLogs = document.getElementById('errorLogs');
-  const currentLogs = errorLogs.textContent;
-  errorLogs.textContent = `${currentLogs}\n${new Date().toLocaleString()} - ${message}`;
-}
+  });
+});
