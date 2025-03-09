@@ -20,7 +20,7 @@ async function generateScript() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer YOUR_API_KEY`  // Substitua YOUR_API_KEY pela sua chave de API da OpenAI
+        'Authorization': `Bearer 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`  // Substitua YOUR_API_KEY pela sua chave de API da OpenAI
       },
       body: JSON.stringify({
         model: 'text-davinci-003',
