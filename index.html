@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Roteiro de Vídeo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Gerador de Roteiro de Vídeo</h1>
+    
+    <label for="niche">Escolha seu nicho:</label>
+    <input type="text" id="niche" placeholder="Ex: Moda, Academia..." />
+    
+    <label for="platform">Escolha a plataforma:</label>
+    <select id="platform">
+      <option value="instagram">Instagram</option>
+      <option value="youtube">YouTube</option>
+      <option value="tiktok">TikTok</option>
+    </select>
+    
+    <button id="generate">Gerar Roteiro</button>
+    
+    <h2>Roteiro Gerado:</h2>
+    <div id="scriptResult"></div>
+    
+    <h3>Logs de Erro:</h3>
+    <pre id="errorLogs"></pre>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
