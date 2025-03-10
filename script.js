@@ -1,56 +1,58 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const output = document.getElementById("output");
-  const errorLog = document.getElementById("errorLog");
+    const output = document.getElementById("output");
+    const errorLog = document.getElementById("errorLog");
+    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY; // Variável da Vercel
 
-  // Verifica se a chave da API está correta
-  const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-  if (!apiKey) {
-    errorLog.innerHTML = "<strong>Erro:</strong> Chave da API não encontrada. Verifique as variáveis de ambiente na Vercel.";
-    return;
-  }
-
-  document.getElementById("gerar").addEventListener("click", async function () {
-    const niche = document.getElementById("niche").value;
-    const platform = document.getElementById("platform").value;
-
-    output.innerHTML = "⏳ Gerando roteiro...";
-    errorLog.innerHTML = ""; // Limpa erros anteriores
-
-    // Se o usuário não escrever um nicho, mostra um erro
-    if (!niche.trim()) {
-      errorLog.innerHTML = "<strong>Erro:</strong> O nicho não pode estar vazio!";
-      return;
+    // Testa se a API Key está disponível
+    if (!apiKey) {
+        errorLog.style.display = "block";
+        errorLog.innerHTML = "<strong>Erro:</strong> Chave da API não encontrada. Configure a variável NEXT_PUBLIC_OPENAI_API_KEY na Vercel.";
+        return;
     }
 
-    try {
-      errorLog.innerHTML = "🔹 Enviando solicitação para OpenAI..."; // Mostra status na página
+    document.getElementById("gerar").addEventListener("click", async function () {
+        const niche = document.getElementById("niche").value.trim();
+        const platform = document.getElementById("platform").value;
 
-      const response = await fetch("https://api.openai.com/v1/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({
-          model: "text-davinci-003",
-          prompt: `Crie um roteiro para um vídeo sobre ${niche} para a plataforma ${platform}.`,
-          max_tokens: 150
-        })
-      });
+        output.style.display = "block";
+        output.innerHTML = "⏳ Gerando roteiro...";
+        errorLog.style.display = "none";
 
-      errorLog.innerHTML = "🔹 Resposta recebida da OpenAI."; // Atualiza status
+        if (!niche) {
+            errorLog.style.display = "block";
+            errorLog.innerHTML = "<strong>Erro:</strong> O nicho não pode estar vazio!";
+            return;
+        }
 
-      const data = await response.json();
+        try {
+            errorLog.style.display = "block";
+            errorLog.innerHTML = "🔹 Enviando solicitação para OpenAI...";
 
-      // Se houver erro na resposta, mostra na tela
-      if (!response.ok) {
-        throw new Error(data.error ? data.error.message : "Erro desconhecido da API.");
-      }
+            const response = await fetch("https://api.openai.com/v1/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "text-davinci-003",
+                    prompt: `Crie um roteiro para um vídeo sobre ${niche} para a plataforma ${platform}.`,
+                    max_tokens: 150
+                })
+            });
 
-      // Exibe o roteiro gerado na tela
-      output.innerHTML = `<strong>✅ Roteiro Gerado:</strong> <br> ${data.choices[0].text}`;
-    } catch (error) {
-      errorLog.innerHTML = `<strong>❌ Erro:</strong> ${error.message}`;
-    }
-  });
+            errorLog.innerHTML = "🔹 Resposta recebida da OpenAI.";
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error ? errorData.error.message : "Erro desconhecido da API.");
+            }
+
+            const data = await response.json();
+            output.innerHTML = `<strong>✅ Roteiro Gerado:</strong> <br> ${data.choices[0].text}`;
+        } catch (error) {
+            errorLog.style.display = "block";
+            errorLog.innerHTML = `<strong>❌ Erro:</strong> ${error.message}`;
+        }
+    });
 });
