@@ -1,91 +1,106 @@
  <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Roteiro</title>
+    <title>Chatbot Hugging Face</title>
     <style>
-        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #chat-container {
+            width: 80%;
+            max-width: 600px;
+            margin: auto;
+            margin-top: 20px;
+        }
+        #messages {
+            height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin: 5px 0;
+        }
+        .user-message {
+            text-align: right;
+        }
+        .bot-message {
+            text-align: left;
+            color: blue;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Gerador de Roteiro</h1>
-        
-        <label for="niche">Escolha seu nicho:</label>
-        <input type="text" id="niche" placeholder="Ex: Moda, Academia, etc.">
 
-        <label for="platform">Escolha a plataforma:</label>
-        <select id="platform">
-            <option value="Instagram">Instagram</option>
-            <option value="YouTube">YouTube</option>
-            <option value="TikTok">TikTok</option>
-        </select>
+<div id="chat-container">
+    <h1>Chatbot</h1>
+    <div id="messages"></div>
+    <input type="text" id="user-input" placeholder="Digite sua mensagem..." />
+    <button onclick="sendMessage()">Enviar</button>
+</div>
 
-        <button id="gerar">Gerar Roteiro</button>
+<script>
+    const apiKey = 'sua-chave-de-api';  // Substitua pela sua chave de API do Hugging Face
 
-        <div id="output"></div>
-        <div id="status"></div>
-        <div id="errorLog"></div>
-    </div>
+    // Função para adicionar a mensagem do usuário e do bot
+    function addMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        if (sender === 'user') {
+            messageDiv.classList.add('user-message');
+        } else {
+            messageDiv.classList.add('bot-message');
+        }
+        messageDiv.innerHTML = content;
+        document.getElementById('messages').appendChild(messageDiv);
+        document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+    }
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const output = document.getElementById("output");
-            const errorLog = document.getElementById("errorLog");
-            const status = document.getElementById("status");
+    // Função para enviar mensagem para a API do Hugging Face
+    async function sendMessage() {
+        const userMessage = document.getElementById('user-input').value;
+        if (!userMessage) return;
 
-            document.getElementById("gerar").addEventListener("click", async function () {
-                const niche = document.getElementById("niche").value.trim();
-                const platform = document.getElementById("platform").value;
+        // Exibir a mensagem do usuário
+        addMessage(userMessage, 'user');
 
-                // Exibe "Processando..." enquanto a requisição está sendo feita
-                output.style.display = "none";
-                status.style.display = "block";
-                status.innerHTML = "🔄 Processando...";
+        // Limpar o campo de entrada
+        document.getElementById('user-input').value = '';
 
-                errorLog.style.display = "none";
-
-                if (!niche) {
-                    errorLog.style.display = "block";
-                    errorLog.innerHTML = "<strong>Erro:</strong> O nicho não pode estar vazio!";
-                    return;
-                }
-
-                try {
-                    // Exibe que está enviando a solicitação
-                    status.innerHTML = "🔄 Enviando solicitação para o servidor...";
-
-                    // Chamada ao servidor Vercel (Backend)
-                    const response = await fetch("/api/generate-script", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            niche: niche,
-                            platform: platform
-                        })
-                    });
-
-                    // Verifica se a resposta foi bem-sucedida
-                    if (!response.ok) {
-                        throw new Error("Erro ao gerar roteiro.");
-                    }
-
-                    const data = await response.json();
-
-                    output.style.display = "block";
-                    status.style.display = "none";
-                    output.innerHTML = `<strong>✅ Roteiro Gerado:</strong><br> ${data.script}`;
-                } catch (error) {
-                    status.style.display = "none";
-                    errorLog.style.display = "block";
-                    errorLog.innerHTML = `<strong>❌ Erro:</strong> ${error.message}`;
-                    output.innerHTML = '';
-                }
-            });
+        // Requisição para a API Hugging Face
+        const response = await fetch('https://api-inference.huggingface.co/models/gpt-3.5-turbo', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                inputs: userMessage,
+            }),
         });
-    </script>
+
+        // Obter resposta do modelo
+        const data = await response.json();
+
+        // Adicionar resposta do bot
+        if (data && data[0] && data[0].generated_text) {
+            addMessage(data[0].generated_text, 'bot');
+        } else {
+            addMessage('Desculpe, não consegui entender. Tente novamente.', 'bot');
+        }
+    }
+</script>
+
 </body>
 </html>
