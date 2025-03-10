@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const output = document.getElementById("output");
     const errorLog = document.getElementById("errorLog");
+    const status = document.getElementById("status");  // Adicionando a área de status
     const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY; // Variável da Vercel
 
     // Testa se a API Key está disponível
@@ -14,9 +15,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const niche = document.getElementById("niche").value.trim();
         const platform = document.getElementById("platform").value;
 
-        // Exibe "Processando..." na tela enquanto o script está sendo executado
-        output.style.display = "block";
-        output.innerHTML = "🔄 Processando...";
+        // Exibe "Processando..." enquanto a requisição está sendo feita
+        output.style.display = "none";  // Esconde o campo de output
+        status.style.display = "block";  // Exibe a área de status
+        status.innerHTML = "🔄 Processando...";
 
         errorLog.style.display = "none";  // Esconde a área de erro
 
@@ -28,8 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             // Exibe que está enviando a solicitação
-            errorLog.style.display = "none"; // Limpa os logs de erro
-            output.innerHTML = "🔄 Enviando solicitação para OpenAI...";
+            status.innerHTML = "🔄 Enviando solicitação para OpenAI...";
 
             const response = await fetch("https://api.openai.com/v1/completions", {
                 method: "POST",
@@ -44,16 +45,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
             });
 
-            // Exibe mensagem após receber a resposta
+            // Verifica se houve erro na resposta da API
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error ? errorData.error.message : "Erro desconhecido da API.");
             }
 
             const data = await response.json();
+            output.style.display = "block";  // Exibe o campo de output
+            status.style.display = "none";   // Esconde o status de processamento
             output.innerHTML = `<strong>✅ Roteiro Gerado:</strong> <br> ${data.choices[0].text}`;
         } catch (error) {
-            errorLog.style.display = "block";
+            status.style.display = "none";  // Esconde o status de processamento
+            errorLog.style.display = "block";  // Exibe o log de erro
             errorLog.innerHTML = `<strong>❌ Erro:</strong> ${error.message}`;
             output.innerHTML = ''; // Limpa o campo de output caso haja erro
         }
