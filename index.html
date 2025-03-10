@@ -1,34 +1,28 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Roteiro de Vídeo</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Roteiros</title>
 </head>
 <body>
-  <div class="container">
-    <h1>Gerador de Roteiro de Vídeo</h1>
+    <h2>Gera de Roteiros para Vídeos</h2>
     
-    <label for="niche">Escolha seu nicho:</label>
-    <input type="text" id="niche" placeholder="Ex: Moda, Academia..." />
+    <label for="niche">Nicho:</label>
+    <input type="text" id="niche" placeholder="Ex: Moda, Academia, Tecnologia">
     
-    <label for="platform">Escolha a plataforma:</label>
+    <label for="platform">Plataforma:</label>
     <select id="platform">
-      <option value="instagram">Instagram</option>
-      <option value="youtube">YouTube</option>
-      <option value="tiktok">TikTok</option>
+        <option value="Instagram">Instagram</option>
+        <option value="YouTube">YouTube</option>
+        <option value="TikTok">TikTok</option>
     </select>
     
-    <button id="generate">Gerar Roteiro</button>
+    <button id="gerar">Gerar Roteiro</button>
     
-    <h2>Roteiro Gerado:</h2>
-    <div id="scriptResult"></div>
-    
-    <h3>Logs de Erro:</h3>
-    <pre id="errorLogs"></pre>
-  </div>
+    <div id="output"></div>
+    <div id="errorLog" style="color: red;"></div>
 
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
