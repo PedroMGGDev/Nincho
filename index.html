@@ -1,62 +1,131 @@
  <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot com DistilBERT</title>
+    <title>Chatbot - Hugging Face</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+        .chat-container {
+            width: 400px;
+            max-width: 100%;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"] {
+            width: calc(100% - 30px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .bot-message {
+            color: #333;
+        }
+    </style>
 </head>
 <body>
-    <h2>Chatbot com DistilBERT</h2>
-    <input type="text" id="userInput" placeholder="Digite algo..." />
-    <button onclick="sendMessage()">Enviar</button>
-
-    <div id="chatOutput"></div>
+    <div class="chat-container">
+        <h2>Chatbot - Hugging Face</h2>
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
 
     <script>
+        const hfAuthToken = "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"; // Substitua pelo seu token do Hugging Face
+        const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct";
+
+        // Função para enviar a mensagem e obter a resposta
         async function sendMessage() {
-            const userInput = document.getElementById("userInput").value;
-            if (!userInput.trim()) {
-                return;
-            }
+            const userInput = document.getElementById("user-input").value;
+            if (userInput.trim() === "") return;
 
-            // Exibe a mensagem do usuário
-            const chatOutput = document.getElementById("chatOutput");
-            chatOutput.innerHTML += `<p><strong>Você:</strong> ${userInput}</p>`;
+            // Adiciona a mensagem do usuário à tela
+            addMessage(userInput, "user-message");
 
-            const response = await getChatbotResponse(userInput);
+            // Limpa o campo de entrada
+            document.getElementById("user-input").value = "";
 
-            // Exibe a resposta do chatbot
-            chatOutput.innerHTML += `<p><strong>Bot:</strong> ${response}</p>`;
-        }
-
-        async function getChatbotResponse(userInput) {
             try {
-                const response = await fetch("https://api-inference.huggingface.co/models/distilbert-base-uncased", {
+                // Chama a API do Hugging Face para gerar a resposta
+                const response = await fetch(modelEndpoint, {
                     method: "POST",
                     headers: {
-                        "Authorization": "Bearer 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", // Sua chave de API
+                        "Authorization": `Bearer ${hfAuthToken}`,
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({
-                        inputs: userInput
-                    })
+                    body: JSON.stringify({ inputs: [userInput] })
                 });
 
                 if (!response.ok) {
-                    throw new Error("Erro na comunicação com a API");
+                    throw new Error("Erro ao obter resposta da API.");
                 }
 
                 const data = await response.json();
-                if (data && data[0]) {
-                    return `Resposta do modelo: ${data[0].generated_text}`;
-                } else {
-                    return "Desculpe, não entendi o que você disse.";
-                }
+                const botResponse = data.generated_text || "Desculpe, não consegui entender sua solicitação.";
+
+                // Adiciona a resposta do bot à tela
+                addMessage(botResponse, "bot-message");
             } catch (error) {
                 console.error("Erro:", error);
-                return `Erro: ${error.message}`;
+                addMessage("Erro ao se conectar com o servidor. Tente novamente.", "bot-message");
             }
         }
+
+        // Função para adicionar uma mensagem na tela
+        function addMessage(message, className) {
+            const chatBox = document.getElementById("chat-box");
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message", className);
+            messageElement.textContent = message;
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Rolagem automática para a última mensagem
+        }
+
+        // Para enviar a mensagem quando pressionar Enter
+        document.getElementById("user-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
     </script>
 </body>
 </html>
