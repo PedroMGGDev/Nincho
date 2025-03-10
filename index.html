@@ -3,127 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot - Hugging Face</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-        }
-        .chat-container {
-            width: 400px;
-            max-width: 100%;
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .chat-box {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-        input[type="text"] {
-            width: calc(100% - 30px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .message {
-            margin-bottom: 10px;
-        }
-        .user-message {
-            color: #007BFF;
-            font-weight: bold;
-        }
-        .bot-message {
-            color: #333;
-        }
-    </style>
+    <title>Teste API Hugging Face</title>
 </head>
 <body>
-    <div class="chat-container">
-        <h2>Chatbot - Hugging Face</h2>
-        <div class="chat-box" id="chat-box"></div>
-        <input type="text" id="user-input" placeholder="Digite sua mensagem...">
-        <button onclick="sendMessage()">Enviar</button>
-    </div>
+    <h1>Teste da API do Hugging Face</h1>
+    <button id="generateButton">Gerar Resposta</button>
+    <pre id="responseOutput"></pre>
 
     <script>
-        const hfAuthToken = "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"; // Substitua pelo seu token do Hugging Face
-        const modelEndpoint = "https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct";
+        document.getElementById('generateButton').addEventListener('click', async () => {
+            const token = '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'; // Substitua pelo seu token da Hugging Face
+            const url = 'https://api-inference.huggingface.co/models/meta-llama/Llama-3.3-70B-Instruct';
 
-        // Função para enviar a mensagem e obter a resposta
-        async function sendMessage() {
-            const userInput = document.getElementById("user-input").value;
-            if (userInput.trim() === "") return;
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
 
-            // Adiciona a mensagem do usuário à tela
-            addMessage(userInput, "user-message");
-
-            // Limpa o campo de entrada
-            document.getElementById("user-input").value = "";
+            const body = JSON.stringify({
+                "inputs": "Quem é você?"
+            });
 
             try {
-                // Chama a API do Hugging Face para gerar a resposta
-                const response = await fetch(modelEndpoint, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${hfAuthToken}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ inputs: [userInput] })
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: headers,
+                    body: body
                 });
 
-                if (!response.ok) {
-                    throw new Error("Erro ao obter resposta da API.");
-                }
-
                 const data = await response.json();
-                const botResponse = data.generated_text || "Desculpe, não consegui entender sua solicitação.";
 
-                // Adiciona a resposta do bot à tela
-                addMessage(botResponse, "bot-message");
+                if (response.ok) {
+                    // Exibe a resposta gerada pela IA
+                    document.getElementById('responseOutput').textContent = JSON.stringify(data, null, 2);
+                } else {
+                    // Exibe o erro se a resposta não for bem-sucedida
+                    document.getElementById('responseOutput').textContent = 'Erro na requisição: ' + data.error || 'Erro desconhecido';
+                }
             } catch (error) {
-                console.error("Erro:", error);
-                addMessage("Erro ao se conectar com o servidor. Tente novamente.", "bot-message");
-            }
-        }
-
-        // Função para adicionar uma mensagem na tela
-        function addMessage(message, className) {
-            const chatBox = document.getElementById("chat-box");
-            const messageElement = document.createElement("div");
-            messageElement.classList.add("message", className);
-            messageElement.textContent = message;
-            chatBox.appendChild(messageElement);
-            chatBox.scrollTop = chatBox.scrollHeight; // Rolagem automática para a última mensagem
-        }
-
-        // Para enviar a mensagem quando pressionar Enter
-        document.getElementById("user-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                sendMessage();
+                document.getElementById('responseOutput').textContent = 'Erro ao conectar com o servidor: ' + error.message;
             }
         });
     </script>
