@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -91,8 +91,8 @@
             const errorLog = document.getElementById("errorLog");
             const status = document.getElementById("status");
 
-            // A chave da API OpenAI deve ser configurada aqui ou através de uma variável de ambiente
-            const apiKey = 'SUA_CHAVE_AQUI'; // Substitua 'SUA_CHAVE_AQUI' pela sua chave de API
+            // Obtém a chave da API da variável de ambiente configurada no Vercel
+            const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY; // Agora está buscando da variável de ambiente
 
             // Testa se a chave da API está disponível
             if (!apiKey) {
