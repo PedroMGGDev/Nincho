@@ -1,81 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Roteiro com GPT</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: auto;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        #output, #errorLog {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        #output {
-            background: #dff0d8;
-            color: #155724;
-            display: none;
-        }
-        #errorLog {
-            background: #f8d7da;
-            color: #721c24;
-            display: none;
-        }
-    </style>
+    <title>Gerador de Roteiro</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
     <div class="container">
-        <h2>Gerador de Roteiro para Vídeos</h2>
+        <h1>Gerador de Roteiro</h1>
         
-        <label for="niche">Digite seu nicho:</label>
-        <input type="text" id="niche" placeholder="Ex: Moda, Academia, Tecnologia">
-        
+        <label for="niche">Escolha seu nicho:</label>
+        <input type="text" id="niche" placeholder="Ex: Moda, Academia, etc.">
+
         <label for="platform">Escolha a plataforma:</label>
         <select id="platform">
             <option value="Instagram">Instagram</option>
             <option value="YouTube">YouTube</option>
             <option value="TikTok">TikTok</option>
         </select>
-        
+
         <button id="gerar">Gerar Roteiro</button>
-        
-        <div id="output"></div>
-        <div id="errorLog"></div>
+
+        <div id="output" style="display: none;"></div>
+        <div id="status" style="display: none;"></div> <!-- Exibe o status de processamento -->
+        <div id="errorLog" style="display: none; color: red;"></div> <!-- Exibe os logs de erro -->
     </div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
