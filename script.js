@@ -14,9 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const niche = document.getElementById("niche").value.trim();
         const platform = document.getElementById("platform").value;
 
+        // Exibe "Processando..." na tela enquanto o script está sendo executado
         output.style.display = "block";
-        output.innerHTML = "⏳ Gerando roteiro...";
-        errorLog.style.display = "none";
+        output.innerHTML = "🔄 Processando...";
+
+        errorLog.style.display = "none";  // Esconde a área de erro
 
         if (!niche) {
             errorLog.style.display = "block";
@@ -25,8 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         try {
-            errorLog.style.display = "block";
-            errorLog.innerHTML = "🔹 Enviando solicitação para OpenAI...";
+            // Exibe que está enviando a solicitação
+            errorLog.style.display = "none"; // Limpa os logs de erro
+            output.innerHTML = "🔄 Enviando solicitação para OpenAI...";
 
             const response = await fetch("https://api.openai.com/v1/completions", {
                 method: "POST",
@@ -41,8 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 })
             });
 
-            errorLog.innerHTML = "🔹 Resposta recebida da OpenAI.";
-
+            // Exibe mensagem após receber a resposta
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error ? errorData.error.message : "Erro desconhecido da API.");
@@ -53,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } catch (error) {
             errorLog.style.display = "block";
             errorLog.innerHTML = `<strong>❌ Erro:</strong> ${error.message}`;
+            output.innerHTML = ''; // Limpa o campo de output caso haja erro
         }
     });
 });
