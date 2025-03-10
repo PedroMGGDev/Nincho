@@ -3,75 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classificação de Imagens com Hugging Face</title>
+    <title>Chatbot com DistilBERT</title>
 </head>
 <body>
-    <h2>Classificação de Imagens com IA</h2>
-    <input type="file" id="imageInput" accept="image/*">
-    <button onclick="classifyImage()">Classificar Imagem</button>
+    <h2>Chatbot com DistilBERT</h2>
+    <input type="text" id="userInput" placeholder="Digite algo..." />
+    <button onclick="sendMessage()">Enviar</button>
 
-    <div id="result"></div>
+    <div id="chatOutput"></div>
 
     <script>
-        async function classifyImage() {
-            const imageInput = document.getElementById("imageInput");
-            const file = imageInput.files[0];
-            if (!file) {
-                alert("Por favor, selecione uma imagem.");
+        async function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            if (!userInput.trim()) {
                 return;
             }
 
-            // Cria uma URL para a imagem selecionada
-            const imageURL = URL.createObjectURL(file);
-            const resultDiv = document.getElementById("result");
+            // Exibe a mensagem do usuário
+            const chatOutput = document.getElementById("chatOutput");
+            chatOutput.innerHTML += `<p><strong>Você:</strong> ${userInput}</p>`;
 
-            // Exibe a imagem carregada
-            resultDiv.innerHTML = `<img src="${imageURL}" style="max-width: 100%; height: auto;">`;
-            
-            // Converte a imagem para base64 e envia para a API
-            const base64Image = await toBase64(file);
-            const result = await getImageClassification(base64Image);
+            const response = await getChatbotResponse(userInput);
 
-            // Exibe o resultado
-            resultDiv.innerHTML += `<p>Resultado da Classificação: ${result}</p>`;
+            // Exibe a resposta do chatbot
+            chatOutput.innerHTML += `<p><strong>Bot:</strong> ${response}</p>`;
         }
 
-        // Função para converter imagem para base64
-        function toBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result.split(',')[1]); // Pega a parte base64
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function getImageClassification(imageBase64) {
+        async function getChatbotResponse(userInput) {
             try {
-                const response = await fetch("https://api-inference.huggingface.co/models/google/vit-base-patch16-224-in21k", {
+                const response = await fetch("https://api-inference.huggingface.co/models/distilbert-base-uncased", {
                     method: "POST",
                     headers: {
-                        "Authorization": "Bearer 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", // Substitua com sua chave de API
+                        "Authorization": "Bearer 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", // Sua chave de API
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        inputs: imageBase64
+                        inputs: userInput
                     })
                 });
 
                 if (!response.ok) {
-                    return `Erro: ${response.status} - ${response.statusText}`;
+                    throw new Error("Erro na comunicação com a API");
                 }
 
                 const data = await response.json();
                 if (data && data[0]) {
-                    return `Classe: ${data[0].label}, Confiança: ${data[0].score.toFixed(2)}`;
+                    return `Resposta do modelo: ${data[0].generated_text}`;
                 } else {
-                    return "Erro: Não consegui classificar a imagem.";
+                    return "Desculpe, não entendi o que você disse.";
                 }
             } catch (error) {
-                console.error("Erro ao classificar a imagem:", error);
-                return `Erro: Ocorreu um problema ao tentar se comunicar com a API. Detalhes: ${error.message}`;
+                console.error("Erro:", error);
+                return `Erro: ${error.message}`;
             }
         }
     </script>
