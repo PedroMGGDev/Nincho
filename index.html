@@ -35,24 +35,36 @@
         }
 
         async function getBotResponse(userMessage) {
-            var response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
-                method: "POST",
-                headers: {
-                    "Authorization": "Bearer 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", // Sua chave de API aqui
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    inputs: userMessage,
-                    options: { use_cache: false }
-                })
-            });
+            try {
+                var response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Bearer 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", // Sua chave de API aqui
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        inputs: userMessage,
+                        options: { use_cache: false }
+                    })
+                });
 
-            if (!response.ok) {
-                return "Desculpe, não consegui conectar com o modelo.";
+                // Verifica se a resposta da API foi bem-sucedida
+                if (!response.ok) {
+                    return `Erro: Não foi possível conectar ao modelo. Status: ${response.status}`;
+                }
+
+                var data = await response.json();
+                
+                // Verifica se a resposta contém texto gerado
+                if (data && data[0] && data[0].generated_text) {
+                    return data[0].generated_text;
+                } else {
+                    return "Erro: Não consegui gerar uma resposta.";
+                }
+            } catch (error) {
+                // Captura erros de rede ou de execução e exibe uma mensagem de erro
+                return `Erro: Ocorreu um problema ao tentar se comunicar com a API. Detalhes: ${error.message}`;
             }
-
-            var data = await response.json();
-            return data[0].generated_text || "Desculpe, não entendi.";
         }
     </script>
 </body>
