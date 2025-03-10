@@ -1,47 +1,48 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
+    font-family: Arial, sans-serif;
+    padding: 20px;
 }
 
 .container {
-  max-width: 600px;
-  margin: 30px auto;
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1, h2, h3 {
-  color: #333;
-}
-
-input, select, button {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 button {
-  background-color: #4CAF50;
-  color: white;
-  cursor: pointer;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
 }
 
 button:hover {
-  background-color: #45a049;
+    background-color: #0056b3;
 }
 
-#errorLogs {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 10px;
-  height: 150px;
-  overflow-y: scroll;
-  font-family: monospace;
-  color: red;
+label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+#output, #status, #errorLog {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+}
+
+#errorLog {
+    color: red;
 }
