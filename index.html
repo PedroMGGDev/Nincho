@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot com Hugging Face GPT-2</title>
+    <title>Chatbot com Hugging Face DistilGPT-2</title>
 </head>
 <body>
-    <h2>Chatbot com GPT-2</h2>
+    <h2>Chatbot com DistilGPT-2</h2>
     <div id="chatbox" style="width: 300px; height: 400px; border: 1px solid #ccc; padding: 10px; overflow-y: auto;"></div>
     <input type="text" id="userInput" placeholder="Digite sua mensagem..." style="width: 200px; padding: 5px;">
     <button onclick="sendMessage()" style="padding: 5px;">Enviar</button>
@@ -36,7 +36,7 @@
 
         async function getBotResponse(userMessage) {
             try {
-                var response = await fetch("https://api-inference.huggingface.co/models/gpt2", {
+                var response = await fetch("https://api-inference.huggingface.co/models/distilgpt2", {
                     method: "POST",
                     headers: {
                         "Authorization": "Bearer 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", // Sua chave de API aqui
